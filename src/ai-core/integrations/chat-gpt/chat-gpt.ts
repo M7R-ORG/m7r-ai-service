@@ -1,23 +1,23 @@
 import openAI from 'openai';
-import { IAIModel } from '../ai-manager';
+import { IAIModel } from '../ai-client';
 import { ChatGPTMessageRoleEnum } from './chat-gpt.types';
 import {
+  AIModelArgsT,
   AIModelEnum,
-  ApiKeyT,
   CreateCompletionArgsT,
   MessageT,
-} from '../ai-manager.types';
-import { defaultTemperature } from '../ai-manager.constants';
-import { RequestFailedError } from '../ai-manager.errors';
+} from '../ai-client.types';
+import { defaultTemperature } from '../ai-client.constants';
+import { RequestFailedError } from '../ai-client.errors';
 
 class ChatGPTModel implements IAIModel {
   private client: openAI;
   private model: AIModelEnum;
   public userRole = ChatGPTMessageRoleEnum.User;
 
-  public constructor(apiKey: ApiKeyT) {
-    this.client = new openAI({ apiKey: apiKey.content });
-    this.model = apiKey.model;
+  public constructor(args: AIModelArgsT) {
+    this.client = new openAI({ apiKey: args.apiKey });
+    this.model = args.model;
   }
 
   public async createCompletion(

@@ -1,25 +1,25 @@
-import { IAIModel } from '../ai-manager';
+import { IAIModel } from '../ai-client';
 import {
+  AIModelArgsT,
   AIModelEnum,
-  ApiKeyT,
   CreateCompletionArgsT,
   MessageT,
-} from '../ai-manager.types';
+} from '../ai-client.types';
 import { GigaChatMessageRoleEnum, GigaChatScopeEnum } from './giga-chat.types';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import * as https from 'https';
-import { RequestFailedError } from '../ai-manager.errors';
-import { defaultTemperature } from '../ai-manager.constants';
+import { RequestFailedError } from '../ai-client.errors';
+import { defaultTemperature } from '../ai-client.constants';
 
 class GigaChatModel implements IAIModel {
   private model: AIModelEnum;
   private apiKey: string;
   public userRole = GigaChatMessageRoleEnum.User;
 
-  public constructor(apiKey: ApiKeyT) {
-    this.model = apiKey.model;
-    this.apiKey = apiKey.content;
+  public constructor(args: AIModelArgsT) {
+    this.model = args.model;
+    this.apiKey = args.apiKey;
   }
 
   private async getAuthToken(): Promise<string> {

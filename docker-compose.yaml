@@ -1,33 +1,37 @@
 version: '3.9'
 
 services:
-  ai-service:
-    image: samarkinivan/ai-service:latest
-    container_name: ai-service
+  # ai-service:
+  #   image: samarkinivan/ai-service:latest
+  #   container_name: ai-service
+  #   restart: on-failure
+  #   environment:
+  #     APP_PORT: 8085
+  #     MAIL_PORT: 587
+  #     RMQ_QUEUE: 'ai-queue'
+  #     RMQ_URL: 'amqp://rabbitmq:5672'
+  #   ports:
+  #     - '8085:8085'
+  #   depends_on:
+  #     - ai-service-db
+  #   networks:
+  #     - app-network
+
+  ai-service-db:
+    image: postgres:latest
+    container_name: ai-service-db
     restart: on-failure
     environment:
-      APP_PORT: 8085
-      MAIL_PORT: 587
-      RMQ_QUEUE: 'ai-queue'
-      RMQ_URL: 'amqp://rabbitmq:5672'
+      - POSTGRES_PASSWORD=SecretPassword161
+      - POSTGRES_USER=user
+      - POSTGRES_DB=AIDB
     ports:
-      - '8085:8085'
+      - 5432:5432
+    volumes:
+      - ./.meta/postgres:/var/lib/postgresql/data
     networks:
       - app-network
 
 networks:
   app-network:
     external: true
-
-  # postgres:
-  #   image: postgres:latest
-  #   container_name: ai-service-db
-  #   restart: on-failure
-  #   ports:
-  #     - 5432:5432
-  #   environment:
-  #     - POSTGRES_PASSWORD=Sosnova61S
-  #     - POSTGRES_USER=SiAvMaAnR
-  #     - POSTGRES_DB=AiService
-  #   volumes:
-  #     - ./.meta/postgres:/var/lib/postgresql/data

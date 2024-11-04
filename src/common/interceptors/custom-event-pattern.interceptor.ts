@@ -13,13 +13,21 @@ export class CustomEventPatternInterceptor implements NestInterceptor {
     const rmqContext = context.switchToRpc().getContext<RmqContext>();
     const channel = rmqContext.getChannelRef();
     const originalMessage = rmqContext.getMessage();
+    const pattern = rmqContext.getPattern();
 
     const { replyTo, correlationId } = originalMessage.properties;
 
     const sendToQueue = (message: unknown) => {
-      channel.sendToQueue(replyTo, Buffer.from(JSON.stringify(message)), {
-        correlationId,
-      });
+      channel.sendToQueue(
+        replyTo,
+        Buffer.from(
+          JSON.stringify({
+            pattern,
+            data: message,
+          }),
+        ),
+        { correlationId },
+      );
     };
 
     return next.handle().pipe(

@@ -1,33 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCompletionDto } from './dto/create-completion.dto';
-import {
-  AIModelInstanceMap,
-  modelMapper,
-} from './integrations/ai-manager.model-mapper';
-import { AIManager, IAIModel } from './integrations/ai-manager';
+import { AIModelInstanceMap } from './integrations/ai-client.model-mapper';
+import { AIClient, IAIModel } from './integrations/ai-client';
+import { MessageT } from './integrations/ai-client.types';
+import { ProfilesRepository } from 'src/profiles/profiles.repository';
+import { AccContextService } from 'src/common/providers/user-context.service';
+import { Service } from 'src/common/providers/base.service';
 
 @Injectable()
-export class AiCoreService {
-  public constructor() {}
+export class AiCoreService extends Service {
+  constructor(
+    private readonly profilesRepository: ProfilesRepository,
+    accContextService: AccContextService,
+  ) {
+    super(accContextService);
+  }
 
-  async createCompletion(createCompletionDto: CreateCompletionDto) {
-    const { message, apiKey, messages, temperature } = createCompletionDto;
+  async createCompletion(
+    createCompletionDto: CreateCompletionDto,
+  ): Promise<MessageT> {
+    const { messages, profileId, accountId } = createCompletionDto;
 
-    const integration = modelMapper[
-      apiKey.model
-    ] as keyof typeof AIModelInstanceMap;
+    const profile = await this.profilesRepository.getOne({
+      id: profileId,
+      accountId,
+    });
 
-    const aiModel: IAIModel = new AIModelInstanceMap[integration](apiKey);
+    const { apiKey, integration, model, temperature, additionalKey } = profile;
 
-    const aiClient = new AIManager(aiModel);
+    const aiModel: IAIModel = new AIModelInstanceMap[integration]({
+      apiKey,
+      model,
+      additionalKey,
+    });
 
-    const requestMessage = {
-      role: aiModel.userRole,
-      content: message.content,
-    };
+    const aiClient = new AIClient(aiModel);
 
     const responseMessage = await aiClient.createCompletion({
-      messages: [...messages, requestMessage],
+      messages,
       temperature,
     });
 
