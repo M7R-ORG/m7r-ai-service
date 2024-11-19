@@ -16,6 +16,7 @@ export type AIModelArgsT = {
 export type CreateCompletionArgsT = {
   messages: Array<MessageT>;
   temperature?: number;
+  template?: string;
 };
 
 export enum AIIntegrationEnum {

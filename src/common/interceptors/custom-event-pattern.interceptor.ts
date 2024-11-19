@@ -24,6 +24,7 @@ export class CustomEventPatternInterceptor implements NestInterceptor {
           JSON.stringify({
             pattern,
             data: message,
+            error: null,
           }),
         ),
         { correlationId },

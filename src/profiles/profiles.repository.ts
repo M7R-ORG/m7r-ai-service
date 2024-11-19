@@ -18,7 +18,7 @@ export class ProfilesRepository {
   async getMany(
     args: ProfilesRepositoryGetManyArgsT,
   ): Promise<PagedResponseT<Profile>> {
-    const { filter, pagination } = args;
+    const { filter, orderBy, pagination } = args;
     const { pageNumber, pageSize } = pagination;
 
     const whereConditions: FindOptionsWhere<Profile> = {
@@ -31,6 +31,7 @@ export class ProfilesRepository {
 
     const [profiles, itemsCount] = await this.profileRepository.findAndCount({
       where: whereConditions,
+      order: orderBy,
       skip: pageNumber * pageSize,
       take: pageSize,
     });
@@ -56,6 +57,21 @@ export class ProfilesRepository {
 
   async create(entity: Partial<Profile>): Promise<Profile> {
     const profile = await this.profileRepository.save(entity);
+
+    return profile;
+  }
+
+  async update(id: number, entity: Partial<Profile>): Promise<Profile> {
+    const existingProfile = await this.profileRepository.findOneBy({ id });
+
+    if (!existingProfile) {
+      throw new Error(`Profile with ID ${id} not found`);
+    }
+
+    const profile = await this.profileRepository.save({
+      ...existingProfile,
+      ...entity,
+    });
 
     return profile;
   }

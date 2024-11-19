@@ -25,12 +25,19 @@ class YandexGPTModel implements IAIModel {
   public async createCompletion(
     args: CreateCompletionArgsT,
   ): Promise<MessageT> {
-    const { messages, temperature } = args;
+    const { messages, temperature, template } = args;
 
     const adaptedMessages = messages.map((message) => ({
       text: message.content,
       role: message.role as YandexGPTMessageRoleEnum,
     }));
+
+    if (template) {
+      adaptedMessages.unshift({
+        text: template,
+        role: YandexGPTMessageRoleEnum.System,
+      });
+    }
 
     const modelUri = `gpt://${this.catalogId}/yandexgpt-lite`;
     const url =

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { Profile } from './entities/profile.entity';
-import { AccContextService } from 'src/common/providers/user-context.service';
+import { AccContextService } from '../common/providers/user-context.service';
 import { Service } from 'src/common/providers/base.service';
 import { modelMapper } from 'src/ai-core/integrations/ai-client.model-mapper';
 import { ProfilesRepository } from './profiles.repository';
 import { PagedResponseT } from 'src/common/common.types';
 import { GetProfilesArgsT } from './profiles.types';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfilesService extends Service {
@@ -31,15 +32,18 @@ export class ProfilesService extends Service {
     await this.profilesRepository.delete(id);
   }
 
-  // async updateProfile(updateProfileDto: UpdateProfileDto): Promise<Profile> {
-  //   const profile = await this.profileRepository.save({
-  //     ...createProfileDto,
-  //     accountId: this.accountId,
-  //     integration: modelMapper[createProfileDto.model],
-  //   });
+  async updateProfile(
+    id: number,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<Profile> {
+    const profile = await this.profilesRepository.update(id, {
+      ...updateProfileDto,
+      accountId: this.accountId,
+      integration: modelMapper[updateProfileDto.model],
+    });
 
-  //   return profile;
-  // }
+    return profile;
+  }
 
   async getProfiles(args: GetProfilesArgsT): Promise<PagedResponseT<Profile>> {
     const { pageNumber, pageSize, searchField } = args;
@@ -49,6 +53,7 @@ export class ProfilesService extends Service {
         accountId: this.accountId,
         searchField,
       },
+      orderBy: { id: 1 },
       pagination: { pageNumber, pageSize },
     });
 

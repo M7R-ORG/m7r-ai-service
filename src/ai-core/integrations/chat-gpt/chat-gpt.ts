@@ -1,4 +1,4 @@
-import openAI from 'openai';
+import OpenAI from 'openai';
 import { IAIModel } from '../ai-client';
 import { ChatGPTMessageRoleEnum } from './chat-gpt.types';
 import {
@@ -11,24 +11,31 @@ import { defaultTemperature } from '../ai-client.constants';
 import { RequestFailedError } from '../ai-client.errors';
 
 class ChatGPTModel implements IAIModel {
-  private client: openAI;
+  private client: OpenAI;
   private model: AIModelEnum;
   public userRole = ChatGPTMessageRoleEnum.User;
 
   public constructor(args: AIModelArgsT) {
-    this.client = new openAI({ apiKey: args.apiKey });
+    this.client = new OpenAI({ apiKey: args.apiKey });
     this.model = args.model;
   }
 
   public async createCompletion(
     args: CreateCompletionArgsT,
   ): Promise<MessageT> {
-    const { messages, temperature } = args;
+    const { messages, temperature, template } = args;
 
     const adaptedMessages = messages.map((message) => ({
       ...message,
       role: message.role as ChatGPTMessageRoleEnum,
     }));
+
+    if (template) {
+      adaptedMessages.unshift({
+        content: template,
+        role: ChatGPTMessageRoleEnum.System,
+      });
+    }
 
     const chatCompletion = await this.client.chat.completions
       .create({

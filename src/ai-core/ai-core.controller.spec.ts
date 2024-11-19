@@ -5,10 +5,19 @@ import { AiCoreService } from './ai-core.service';
 describe('AiCoreController', () => {
   let controller: AiCoreController;
 
+  const mockAiCoreService = {
+    createMessage: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AiCoreController],
-      providers: [AiCoreService],
+      providers: [
+        {
+          provide: AiCoreService,
+          useValue: mockAiCoreService,
+        },
+      ],
     }).compile();
 
     controller = module.get<AiCoreController>(AiCoreController);

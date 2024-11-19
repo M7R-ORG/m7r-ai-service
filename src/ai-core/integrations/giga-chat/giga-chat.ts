@@ -54,9 +54,16 @@ class GigaChatModel implements IAIModel {
   public async createCompletion(
     args: CreateCompletionArgsT,
   ): Promise<MessageT> {
-    const { messages, temperature } = args;
+    const { messages, temperature, template } = args;
 
     const accessToken = await this.getAuthToken();
+
+    if (template) {
+      messages.unshift({
+        content: template,
+        role: GigaChatMessageRoleEnum.System,
+      });
+    }
 
     const url = 'https://gigachat.devices.sberbank.ru/api/v1/chat/completions';
 

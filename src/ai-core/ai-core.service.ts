@@ -26,7 +26,12 @@ export class AiCoreService extends Service {
       accountId,
     });
 
-    const { apiKey, integration, model, temperature, additionalKey } = profile;
+    if (!profile) {
+      throw new Error('Profile not found');
+    }
+
+    const { apiKey, integration, model, temperature, template, additionalKey } =
+      profile;
 
     const aiModel: IAIModel = new AIModelInstanceMap[integration]({
       apiKey,
@@ -39,6 +44,7 @@ export class AiCoreService extends Service {
     const responseMessage = await aiClient.createCompletion({
       messages,
       temperature,
+      template,
     });
 
     return responseMessage;
