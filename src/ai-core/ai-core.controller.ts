@@ -12,7 +12,7 @@ export class AiCoreController {
 
   @CustomEventPattern('create-message')
   async createMessage(createCompletionDto: CreateCompletionDto) {
-    const { channelId, profileId } = createCompletionDto;
+    const { channelId, profileId, originalMessageId } = createCompletionDto;
 
     const { content } =
       await this.aiCoreService.createCompletion(createCompletionDto);
@@ -21,6 +21,7 @@ export class AiCoreController {
       message: content,
       channelId,
       profileId,
+      originalMessageId,
     };
   }
 

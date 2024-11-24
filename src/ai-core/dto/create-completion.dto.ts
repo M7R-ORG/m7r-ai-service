@@ -5,4 +5,5 @@ export class CreateCompletionDto {
   profileId: number;
   channelId: number;
   messages: Array<MessageT>;
+  originalMessageId: number;
 }
