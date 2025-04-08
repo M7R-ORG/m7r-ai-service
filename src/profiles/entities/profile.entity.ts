@@ -17,6 +17,7 @@ export class Profile {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Index()
   @Column({ nullable: true })
   name: string;
 
