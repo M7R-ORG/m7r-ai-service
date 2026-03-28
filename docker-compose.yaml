@@ -1,21 +1,19 @@
-version: '3.9'
-
 services:
   ai-service:
     image: samarkinivan/ai-service:latest
     container_name: ai-service
     restart: on-failure
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       APP_PORT: 8085
       MAIL_PORT: 587
       RMQ_QUEUE: 'ai-queue'
-      RMQ_URL: 'amqp://rabbitmq:5672'
+      RMQ_URL: 'amqp://host.docker.internal:5672'
     ports:
       - '8085:8085'
     depends_on:
       - ai-service-db
-    networks:
-      - app-network
 
   ai-service-db:
     image: postgres:latest
@@ -29,9 +27,3 @@ services:
       - 5432:5432
     volumes:
       - ./.meta/postgres:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    external: true
