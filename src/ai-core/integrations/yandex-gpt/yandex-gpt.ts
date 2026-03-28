@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { IAIModel } from '../ai-manager';
-import { defaultTemperature } from '../ai-manager.constants';
+import { IAIModel } from '../ai-client';
+import { defaultTemperature } from '../ai-client.constants';
 import {
+  AIModelArgsT,
   AIModelEnum,
-  ApiKeyT,
   CreateCompletionArgsT,
   MessageT,
-} from '../ai-manager.types';
+} from '../ai-client.types';
 import { YandexGPTMessageRoleEnum } from './yandex-gpt.types';
-import { RequestFailedError } from '../ai-manager.errors';
+import { RequestFailedError } from '../ai-client.errors';
 
 class YandexGPTModel implements IAIModel {
   private model: AIModelEnum;
@@ -16,21 +16,28 @@ class YandexGPTModel implements IAIModel {
   private catalogId: string;
   public userRole = YandexGPTMessageRoleEnum.User;
 
-  public constructor(apiKey: ApiKeyT) {
-    this.model = apiKey.model;
-    this.apiKey = apiKey.content;
-    this.catalogId = apiKey.optionalContent;
+  public constructor(args: AIModelArgsT) {
+    this.model = args.model;
+    this.apiKey = args.apiKey;
+    this.catalogId = args.additionalKey;
   }
 
   public async createCompletion(
     args: CreateCompletionArgsT,
   ): Promise<MessageT> {
-    const { messages, temperature } = args;
+    const { messages, temperature, template } = args;
 
     const adaptedMessages = messages.map((message) => ({
       text: message.content,
       role: message.role as YandexGPTMessageRoleEnum,
     }));
+
+    if (template) {
+      adaptedMessages.unshift({
+        text: template,
+        role: YandexGPTMessageRoleEnum.System,
+      });
+    }
 
     const modelUri = `gpt://${this.catalogId}/yandexgpt-lite`;
     const url =

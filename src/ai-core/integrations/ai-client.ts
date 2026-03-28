@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCompletionArgsT, MessageT } from './ai-manager.types';
+import { CreateCompletionArgsT, MessageT } from './ai-client.types';
 
 export interface IAIModel {
   createCompletion(args: CreateCompletionArgsT): Promise<MessageT>;
@@ -8,7 +8,7 @@ export interface IAIModel {
 }
 
 @Injectable()
-export class AIManager {
+export class AIClient {
   constructor(private readonly model: IAIModel) {}
 
   createCompletion(args: CreateCompletionArgsT) {

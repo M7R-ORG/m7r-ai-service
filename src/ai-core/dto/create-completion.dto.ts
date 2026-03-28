@@ -1,8 +1,9 @@
-import { ApiKeyT, MessageT } from '../integrations/ai-manager.types';
+import { MessageT } from '../integrations/ai-client.types';
 
 export class CreateCompletionDto {
-  message: MessageT;
-  temperature?: number;
-  apiKey: ApiKeyT;
+  accountId: number;
+  profileId: number;
+  channelId: number;
   messages: Array<MessageT>;
+  originalMessageId: number;
 }

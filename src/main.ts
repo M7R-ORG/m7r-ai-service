@@ -4,6 +4,7 @@ import { MicroserviceOptions } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { rabbitMQConfig } from './config/rabbitmq.config';
 import { createDocument } from './config/swagger.config';
+import { RMQConfig } from './config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,13 +13,12 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  const appPort = configService.get('app.port');
-  const rmqQueue = configService.get('rmq.queue');
-  const rmqUrl = configService.get('rmq.url');
+  const appPort = configService.get<number>('app.port');
+  const { queue, url } = configService.get<RMQConfig>('rmq');
 
   const rmqConfig = rabbitMQConfig({
-    queue: rmqQueue,
-    urls: [rmqUrl],
+    queue: queue,
+    urls: [url],
   });
 
   app.connectMicroservice<MicroserviceOptions>(rmqConfig);

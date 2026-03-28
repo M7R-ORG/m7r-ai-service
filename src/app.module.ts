@@ -1,13 +1,22 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AiCoreModule } from './ai-core/ai-core.module';
 import { TimerMiddleware } from './common/middlewares/timer.middleware';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { config } from './config/app.config';
+import { ProfilesModule } from './profiles/profiles.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeORMFactory } from './config/typeorm.config';
 
 @Module({
   imports: [
+    ProfilesModule,
     AiCoreModule,
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: typeORMFactory,
+    }),
   ],
 })
 export class AppModule {

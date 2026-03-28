@@ -7,20 +7,21 @@ export type MessageT = {
   role: string;
 };
 
-export type ApiKeyT = {
+export type AIModelArgsT = {
   model: AIModelEnum;
-  content: string;
-  optionalContent?: string;
+  apiKey: string;
+  additionalKey?: string;
 };
 
 export type CreateCompletionArgsT = {
   messages: Array<MessageT>;
   temperature?: number;
+  template?: string;
 };
 
 export enum AIIntegrationEnum {
   ChatGPT = 'chat-gpt',
-  ChatSonic = 'chat-sonic',
+  YouChat = 'you-chat',
   YandexGPT = 'yandex-gpt',
   GigaChat = 'giga-chat',
 }
@@ -28,6 +29,7 @@ export enum AIIntegrationEnum {
 export enum AIModelEnum {
   Gpt3T = ChatGPTModelEnum.Gpt3T,
   Gpt4 = ChatGPTModelEnum.Gpt4,
+  Gpt4OM = ChatGPTModelEnum.Gpt4OM,
   YaLite = YandexGPTModelEnum.YaLite,
   GigaChat = GigaChatModelEnum.GigaChat,
   GigaChatPlus = GigaChatModelEnum.GigaChatPlus,
