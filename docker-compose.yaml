@@ -12,7 +12,7 @@ services:
       - ai-service-db
 
   ai-service-db:
-    image: postgres:latest
+    image: postgres:17
     container_name: ai-service-db
     restart: on-failure
     env_file: .env
