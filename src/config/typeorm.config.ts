@@ -22,7 +22,6 @@ export async function typeORMFactory(
     database,
     synchronize: true,
     autoLoadEntities: true,
-    migrationsRun: true,
     logging: false,
   };
 }
