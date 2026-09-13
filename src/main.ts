@@ -29,7 +29,8 @@ async function bootstrap() {
 
   createDocument(app);
 
-  await app.startAllMicroservices();
   await app.listen(port);
+
+  app.startAllMicroservices();
 }
 bootstrap();
